@@ -1,5 +1,7 @@
 import config
 from pyzaim import ZaimAPI
+import os
+import json
 
 
 def getZaimData():
@@ -21,3 +23,16 @@ def getZaimData():
     print(msg)
 
     return [datas]
+
+
+def outputJSON(datas):
+    """取得したデータをJSON形式で出力する
+
+    """
+
+    new_path = "json"
+    if not os.path.exists(new_path):
+        os.mkdir(new_path)
+
+    with open('json/zaim-backup.json', 'w') as f:
+        json.dump(datas, f, ensure_ascii=False, indent=4)
