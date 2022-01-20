@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: "0 0 1 * *" # cronで定期実行
+    - cron: "0 0 * * *" # cronで定期実行
 
 jobs:
   zaim-backup:
