@@ -19,13 +19,22 @@ def getZaimData():
     # データ一覧の取得
     datas = api.get_data()
 
+    # カテゴリ一覧情報
+    categories = api.category_itos
+
+    # ジャンル一覧情報を取得
+    genres = api.genre_itos
+
+    # 口座一覧情報を取得
+    accounts = api.account_itos
+
     msg = str(len(datas)) + " 件のデータを取得しました"
     print(msg)
 
-    return [datas]
+    return [datas, categories, genres, accounts]
 
 
-def outputJSON(datas):
+def outputJSON(datas, categories, genres, accounts):
     """取得したデータをJSON形式で出力する
 
     """
@@ -36,3 +45,12 @@ def outputJSON(datas):
 
     with open('json/zaim-backup.json', 'w') as f:
         json.dump(datas, f, ensure_ascii=False, indent=4)
+
+    with open('json/category.json', 'w') as f:
+        json.dump(categories, f, ensure_ascii=False, indent=4)
+
+    with open('json/genre.json', 'w') as f:
+        json.dump(genres, f, ensure_ascii=False, indent=4)
+
+    with open('json/account.json', 'w') as f:
+        json.dump(accounts, f, ensure_ascii=False, indent=4)

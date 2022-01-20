@@ -1,7 +1,7 @@
 import zaim
 
 # データ取得
-datas = zaim.getZaimData()
+datas, categories, genres, accounts = zaim.getZaimData()
 
 # JSON出力
-zaim.outputJSON(datas)
+zaim.outputJSON(datas, categories, genres, accounts)
