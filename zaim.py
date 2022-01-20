@@ -2,6 +2,7 @@ import config
 from pyzaim import ZaimAPI
 import os
 import json
+import csv
 
 
 def getZaimData():
@@ -57,6 +58,51 @@ def convertData(datas, categories, genres, accounts):
         data["to"] = accounts[toAccountId] if toAccountId > 0 else "-"
 
     return datas
+
+
+def outputCSV(datas):
+    """カラム名を日本語に置換し、CSV出力する
+
+    """
+
+    # 種別名を日本語に置換
+    for data in datas:
+        keys = {
+            "date": "日付",
+            "mode": "方法",
+            "category": "カテゴリ",
+            "genre": "カテゴリの内訳",
+            "from": "支払元",
+            "to": "入金先",
+            "name": "品目",
+            "comment": "メモ",
+            "place": "お店",
+            "currency_code": "通貨"
+        }
+        for k, v in keys.items():
+            data[v] = data.pop(k)
+
+        # 入出金
+        data["収入"] = data.pop("amount") if data["方法"] == "income" else 0
+        data["支出"] = data.pop("amount") if data["方法"] == "payment" else 0
+        data["振替"] = data.pop("amount") if data["方法"] == "transfer" else 0
+
+        # 不要なキーを削除
+        unUsedKeys = ["id", "user_id", "category_id",
+                      "genre_id", "from_account_id", "to_account_id", "active", "created", "receipt_id", "place_uid", "original_money_ids"]
+        for key in unUsedKeys:
+            if(key in data):
+                data.pop(key)
+
+    # ヘッダーを指定
+    fieldName = list(keys.values())
+    fieldName.extend(['収入', '支出', '振替'])
+
+    # CSV出力
+    with open('zaim-backup.csv', 'w', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldName)
+        writer.writeheader()
+        writer.writerows(datas)
 
 
 def outputJSON(datas):
