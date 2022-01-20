@@ -34,23 +34,35 @@ def getZaimData():
     return [datas, categories, genres, accounts]
 
 
-def outputJSON(datas, categories, genres, accounts):
+def convertData(datas, categories, genres, accounts):
+    """種別IDをもとに、種別名を付与する
+
+    """
+
+    for data in datas:
+
+        # カテゴリ名を付与
+        categoryId = int(data["category_id"])
+        data["category"] = categories[categoryId] if categoryId > 0 else ""
+
+        # 内訳名を付与
+        genreId = int(data["genre_id"])
+        data["genre"] = genres[genreId] if genreId > 0 else ""
+
+        # 口座名を付与
+        fromAccountId = int(data["from_account_id"])
+        data["from"] = accounts[fromAccountId] if fromAccountId > 0 else "-"
+
+        toAccountId = int(data["to_account_id"])
+        data["to"] = accounts[toAccountId] if toAccountId > 0 else "-"
+
+    return datas
+
+
+def outputJSON(datas):
     """取得したデータをJSON形式で出力する
 
     """
 
-    new_path = "json"
-    if not os.path.exists(new_path):
-        os.mkdir(new_path)
-
-    with open('json/zaim-backup.json', 'w') as f:
+    with open('zaim-backup.json', 'w') as f:
         json.dump(datas, f, ensure_ascii=False, indent=4)
-
-    with open('json/category.json', 'w') as f:
-        json.dump(categories, f, ensure_ascii=False, indent=4)
-
-    with open('json/genre.json', 'w') as f:
-        json.dump(genres, f, ensure_ascii=False, indent=4)
-
-    with open('json/account.json', 'w') as f:
-        json.dump(accounts, f, ensure_ascii=False, indent=4)
