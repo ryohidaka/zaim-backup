@@ -8,3 +8,6 @@ datas = zaim.convertData(datas, categories, genres, accounts)
 
 # JSON出力
 zaim.outputJSON(datas)
+
+# CSV出力
+zaim.outputCSV(datas)
