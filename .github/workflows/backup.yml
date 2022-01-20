@@ -1,0 +1,42 @@
+name: Zaim Backup
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1 * *" # cronで定期実行
+
+jobs:
+  zaim-backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+          architecture: "x64"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Python
+        env:
+          CONSUMER_KEY: ${{secrets.CONSUMER_KEY}}
+          CONSUMER_SECRET: ${{secrets.CONSUMER_SECRET}}
+          ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
+          ACCESS_SECRET: ${{secrets.ACCESS_SECRET}}
+        run: python main.py
+      - name: Set current datetime as env variable
+        env:
+          TZ: "Asia/Tokyo" # タイムゾーン指定
+        run: echo "CURRENT_DATETIME=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+      - name: Commit and Push # 実行した結果をプッシュして変更をレポジトリに反映
+        run: |
+          git config user.name ${{secrets.USER_NAME}}
+          git config user.email ${{secrets.USER_EMAIL}}
+          git add zaim-backup.json zaim-backup.csv
+          git commit -m "update: ${{env.CURRENT_DATETIME}}"
+          git pull
+          git push origin main
